@@ -17,7 +17,7 @@ export const createUser = async (userData) => {
   const { email } = userData;
 
   try {
-    // Vérifiez d'abord si l'email existe déjà
+   
     const emailExists = await checkEmailExists(email);
 
     if (emailExists) {

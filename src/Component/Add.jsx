@@ -8,12 +8,13 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import { createUser, checkEmailExists } from "../Api/UserApi"; // Assurez-vous d'importer la fonction de vérification de l'email
+import { createUser, checkEmailExists } from "../Api/UserApi";
 import { useNavigate } from "react-router-dom";
 
 function Add() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -31,12 +32,10 @@ function Add() {
         const emailExists = await checkEmailExists(values.email);
 
         if (emailExists) {
-          // L'email existe déjà, ouvrez le modal
           setOpen(true);
         } else {
           await createUser(values);
-          alert("Données ajoutées avec succès !");
-          navigate("/");
+          setSuccessModalOpen(true);
         }
       } catch (error) {
         console.error(error);
@@ -45,9 +44,15 @@ function Add() {
   });
 
   const handleClose = () => {
-    
     setOpen(false);
   };
+
+  const handleSuccessModalClose = () => {
+    setSuccessModalOpen(false);
+    
+    navigate("/"); 
+  };
+
 
   return (
     <Container maxWidth="sm" style={{ textAlign: "center" }}>
@@ -81,7 +86,7 @@ function Add() {
           margin="normal"
           style={{ marginBottom: "16px" }}
         />
-        <Button type="submit" variant="contained" color="primary">
+            <Button type="submit" variant="contained" color="primary">
           Soumettre
         </Button>
       </form>
@@ -96,8 +101,18 @@ function Add() {
           </Button>
         </DialogActions>
       </Dialog>
+      <Dialog open={successModalOpen} onClose={handleSuccessModalClose}>
+        <DialogTitle>Succès</DialogTitle>
+        <DialogContent>
+          User est ajoutées avec succès !
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleSuccessModalClose} color="primary">
+            Fermer
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }
-
 export default Add;
